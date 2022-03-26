@@ -20,6 +20,7 @@ import '../../widgets/loadingWidgets/truckLoadingWidgets.dart';
 import '../../widgets/myTrucksCard.dart';
 import '../../widgets/truckScreenBarButton.dart';
 import '../mapAllTrucks.dart';
+import '../myTrucksSearchResultsScreen.dart';
 
 class MyTrucks extends StatefulWidget {
   @override
@@ -142,7 +143,17 @@ class _MyTrucksState extends State<MyTrucks> {
                           ),
                         ),
                         child: TextField(
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(() => MyTrucksResult(
+                              gpsDataList: gpsDataList,
+                              deviceList: devicelist,
+                              //truckAddressList: truckAddressList,
+                              status: status,
+                              items: items,
+                            ));
+                            print("Enterrr");
+                            print("THE ITEMS $items");
+                          },
                           readOnly: true,
                           textAlignVertical: TextAlignVertical.center,
                           textAlign: TextAlign.start,

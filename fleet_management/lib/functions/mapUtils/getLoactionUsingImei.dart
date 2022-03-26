@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geocode/geocode.dart';
+import 'package:geocoder2/geocoder2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_config/flutter_config.dart';
@@ -27,7 +28,7 @@ class MapUtil {
   String basicAuth =
       'Basic ' + base64Encode(utf8.encode('$traccarUser:$traccarPass'));
 
-  String googleApiKey = dotenv.env['AIzaSyCPU872xIfRhjvtdLViTDbj0EnIBuxlcSs'].toString();
+  String googleApiKey = dotenv.env['mapKey'].toString();
 
   //TRACCAR API CALLS------------------------------------------------------------
 
@@ -123,21 +124,20 @@ class MapUtil {
           GeoCode geoCode = GeoCode();
           try {
             List<Placemark> newPlace;
-            Address coordinates;
             current_lang = LocalizationService().getCurrentLang();
+            GeoData geodata;
             if (current_lang == 'Hindi') {
-              coordinates = await geoCode.reverseGeocoding(latitude: latn, longitude: lngn);
+              geodata = await Geocoder2.getDataFromCoordinates(latitude: latn, longitude: lngn,googleMapApiKey: googleApiKey);
               // newPlace = await placemarkFromCoordinates(latn, lngn,
               //     localeIdentifier: "hi_IN");
             } else {
-              coordinates = await geoCode.reverseGeocoding(latitude: latn, longitude: lngn);
+              geodata = await Geocoder2.getDataFromCoordinates(latitude: latn, longitude: lngn,googleMapApiKey: googleApiKey);
 
               // newPlace = await placemarkFromCoordinates(latn, lngn,
               //     localeIdentifier: "en_US");
             }
-            var first = coordinates;
 
-            addressstring = "${first.streetAddress}, ${first.region}, ${first.city} , ${first.countryName}";
+            addressstring = "${geodata.address}, ${geodata.city}, ${geodata.country}";
 
             // if (first.subLocality == "")
             //   addressstring =
@@ -225,27 +225,32 @@ class MapUtil {
           try {
             List<Placemark> newPlace;
             current_lang = LocalizationService().getCurrentLang();
+            GeoData geodata;
             if (current_lang == 'Hindi') {
-              newPlace = await placemarkFromCoordinates(latn, lngn,
-                  localeIdentifier: "hi_IN");
+              geodata = await Geocoder2.getDataFromCoordinates(latitude: latn, longitude: lngn, googleMapApiKey: googleApiKey);
+              // newPlace = await placemarkFromCoordinates(latn, lngn,
+              //     localeIdentifier: "hi_IN");
             } else {
-              newPlace = await placemarkFromCoordinates(latn, lngn,
-                  localeIdentifier: "en_US");
+              geodata = await Geocoder2.getDataFromCoordinates(latitude: latn, longitude: lngn, googleMapApiKey: googleApiKey);
+              // newPlace = await placemarkFromCoordinates(latn, lngn,
+              //     localeIdentifier: "en_US");
             }
-            var first = newPlace.first;
 
-            if (first.subLocality == "")
-              addressstring =
-              "${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
-            else if (first.locality == "")
-              addressstring =
-              "${first.street}, ${first.subLocality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
-            else if (first.administrativeArea == "")
-              addressstring =
-              "${first.street}, ${first.subLocality}, ${first.locality}, ${first.postalCode}, ${first.country}";
-            else
-              addressstring =
-              "${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+            addressstring = "${geodata.address}, ${geodata.city}, ${geodata.country}";
+
+            // var first = newPlace.first;
+            // if (first.subLocality == "")
+            //   addressstring =
+            //   "${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+            // else if (first.locality == "")
+            //   addressstring =
+            //   "${first.street}, ${first.subLocality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+            // else if (first.administrativeArea == "")
+            //   addressstring =
+            //   "${first.street}, ${first.subLocality}, ${first.locality}, ${first.postalCode}, ${first.country}";
+            // else
+            //   addressstring =
+            //   "${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
             print("ADD $addressstring");
           } catch (e) {
             print(e);

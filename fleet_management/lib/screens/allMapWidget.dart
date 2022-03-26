@@ -73,7 +73,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
     initfunction2();
     try {
       timer = Timer.periodic(
-          Duration(minutes: 1, seconds: 10), (Timer t) => onActivityExecuted());
+          Duration(minutes: 0, seconds: 1), (Timer t) => onActivityExecuted());
     } catch (e) {
       logger.e("Error is $e");
     }

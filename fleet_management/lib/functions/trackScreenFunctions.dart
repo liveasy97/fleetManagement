@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:geocoder2/geocoder2.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +20,8 @@ var endTimeParam;
 DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
 List<LatLng> polylineCoordinates = [];
 List<LatLng> polylineCoordinates2 = [];
+String googleApiKey = dotenv.env['mapKey'].toString();
+
 
 //Date format functions---------------------------
 
@@ -308,17 +312,23 @@ getStoppageDuration(var gpsStoppageHistory){
 
 getStoppageAddress(var gpsStoppageHistory) async{
   var stopAddress = "";
-  // for(int i=0; i<gpsStoppageHistory.length; i++) {
-    List<Placemark> placemarks = await placemarkFromCoordinates(gpsStoppageHistory.latitude, gpsStoppageHistory.longitude);
-    var first = placemarks.first;
-    print("${first.subLocality},${first.locality},${first.administrativeArea}\n${first.postalCode},${first.country}");
+  for(int i=0; i<gpsStoppageHistory.length; i++) {
 
-    if(first.subLocality=="")
-      stopAddress="${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
-    else
-      stopAddress="${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+    GeoData geodata;
+    geodata = await Geocoder2.getDataFromCoordinates(latitude: gpsStoppageHistory.latitude, longitude: gpsStoppageHistory.longitude,googleMapApiKey: googleApiKey);
 
-  // }
+    stopAddress = "${geodata.address}, ${geodata.city}, ${geodata.country}";
+
+    //   List<Placemark> placemarks = await placemarkFromCoordinates(gpsStoppageHistory.latitude, gpsStoppageHistory.longitude);
+  //   var first = placemarks.first;
+  //   print("${first.subLocality},${first.locality},${first.administrativeArea}\n${first.postalCode},${first.country}");
+  //
+  //   if(first.subLocality=="")
+  //     stopAddress="${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+  //   else
+  //     stopAddress="${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+
+  }
   return stopAddress;
 }
 
@@ -328,23 +338,31 @@ getStoppageAddressLatLong(var lat, var long) async {
   current_lang = LocalizationService().getCurrentLang();
   print(" current language is $current_lang");
   List<Placemark> placemarks ;
+  GeoData geoData;
   if (current_lang == 'Hindi') {
-    placemarks =
-    await placemarkFromCoordinates(lat, long, localeIdentifier: "hi_IN");
-  } else {
-    placemarks =
-    await placemarkFromCoordinates(lat, long, localeIdentifier: "en_US");
-  }
-  var first = placemarks.first;
-  print(
-      "${first.subLocality},${first.locality},${first.administrativeArea}\n${first.postalCode},${first.country}");
+    geoData = await Geocoder2.getDataFromCoordinates(latitude: lat, longitude: long,googleMapApiKey: googleApiKey);
 
-  if (first.subLocality == "")
-    stopAddress =
-    "${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
-  else
-    stopAddress =
-    "${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+    // placemarks =
+    // await placemarkFromCoordinates(lat, long, localeIdentifier: "hi_IN");
+  } else {
+    geoData = await Geocoder2.getDataFromCoordinates(latitude: lat, longitude: long,googleMapApiKey: googleApiKey);
+
+    // placemarks =
+    // await placemarkFromCoordinates(lat, long, localeIdentifier: "en_US");
+  }
+
+  stopAddress = "${geoData.address}, ${geoData.city}, ${geoData.country}";
+
+  // var first = placemarks.first;
+  // print(
+  //     "${first.subLocality},${first.locality},${first.administrativeArea}\n${first.postalCode},${first.country}");
+
+  // if (first.subLocality == "")
+  //   stopAddress =
+  //   "${first.street}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
+  // else
+  //   stopAddress =
+  //   "${first.street}, ${first.subLocality}, ${first.locality}, ${first.administrativeArea}, ${first.postalCode}, ${first.country}";
 
   // }
   return stopAddress;

@@ -364,6 +364,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  geocoder2:
+    dependency: "direct main"
+    description:
+      name: geocoder2
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   geocoding:
     dependency: "direct main"
     description:
