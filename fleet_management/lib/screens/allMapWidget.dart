@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:fullscreen/fullscreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -19,11 +21,12 @@ import '../widgets/truckInfoWindow.dart';
 class AllMapWidget extends StatefulWidget {
   List gpsDataList;
   List truckDataList;
+  List status;
 
-  AllMapWidget({
-    required this.gpsDataList,
-    required this.truckDataList,
-  });
+  AllMapWidget(
+      {required this.gpsDataList,
+      required this.truckDataList,
+      required this.status});
 
   @override
   _AllMapWidgetState createState() => _AllMapWidgetState();
@@ -39,7 +42,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
   late BitmapDescriptor pinLocationIcon;
   late BitmapDescriptor pinLocationIconTruck;
   late CameraPosition camPosition =
-  CameraPosition(target: lastlatLngMarker, zoom: 4.5);
+      CameraPosition(target: lastlatLngMarker, zoom: 4.5);
   var logger = Logger();
   bool showdetails = false;
   late Marker markernew;
@@ -58,7 +61,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
 
   //CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
   CustomInfoWindowController _customDetailsInfoWindowController =
-  CustomInfoWindowController();
+      CustomInfoWindowController();
   bool isAnimation = false;
   double mapHeight = 600;
   var direction;
@@ -67,6 +70,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
 
   @override
   void initState() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
     iconthenmarker();
@@ -125,28 +129,104 @@ class _AllMapWidgetState extends State<AllMapWidget>
 
   void iconthenmarker() {
     logger.i("in Icon maker function");
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-        'assets/icons/truckPin.png')
-        .then((value) => {
-      setState(() {
-        pinLocationIconTruck = value;
-      }),
-      print("hello ${widget.gpsDataList.length}"),
-      for (int i = 0; i < widget.gpsDataList.length; i++)
-        {
-          if (widget.gpsDataList[i] != null)
-            createmarker(
-                widget.gpsDataList[i], widget.truckDataList[i]),
+
+    for (int i = 0; i < widget.gpsDataList.length; i++) {
+      print(widget.gpsDataList);
+      print('gps data list');
+      if (widget.gpsDataList[i] != null) {
+        if (widget.status[i] == 'Online'&& widget.gpsDataList[i].speed>5) {
+          print("Test $i");
+          print("Test in If");
+          BitmapDescriptor.fromAssetImage(
+                  ImageConfiguration(devicePixelRatio: 2.5),
+                  'assets/icons/img_1.png')
+              .then((value) => {
+                    setState(() {
+                      pinLocationIconTruck = value;
+                    }),
+                    print("hello ${widget.gpsDataList.length}"),
+                    // for (int i = 0; i < widget.gpsDataList.length; i++)
+                    //   {
+                    // if (widget.gpsDataList[i] != null){
+                    //   if(widget.status[i] == 'Online'){
+                    createmarker(widget.gpsDataList[i], widget.truckDataList[i])
+                    //   }
+                    // }
+                    // }
+                  });
+        } else if(widget.status[i] == 'Online'&& widget.gpsDataList[i].speed<5){
+          print("Test $i");
+          print("Test in else if");
+          BitmapDescriptor.fromAssetImage(
+                  ImageConfiguration(devicePixelRatio: 2.5),
+                  'assets/icons/img.png')
+              .then((value) => {
+                    setState(() {
+                      pinLocationIconTruck = value;
+                    }),
+                    print("hello ${widget.gpsDataList.length}"),
+                    // for (int i = 0; i < widget.gpsDataList.length; i++)
+                    //   {
+                    // if (widget.gpsDataList[i] != null){
+                    //   if(widget.status[i] == 'Online'){
+                    createmarker(widget.gpsDataList[i], widget.truckDataList[i])
+                    //   }
+                    // }
+                    // }
+                  });
+        }else{
+          print("Test $i");
+          print("Test in else");
+          BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(devicePixelRatio: 2.5),
+              'assets/icons/img.png')
+              .then((value) => {
+            setState(() {
+              pinLocationIconTruck = value;
+            }),
+            print("hello ${widget.gpsDataList.length}"),
+            // for (int i = 0; i < widget.gpsDataList.length; i++)
+            //   {
+            // if (widget.gpsDataList[i] != null){
+            //   if(widget.status[i] == 'Online'){
+            createmarker(widget.gpsDataList[i], widget.truckDataList[i])
+            //   }
+            // }
+            // }
+          });
+
         }
-    });
+
+      }
+
+
+
+      // BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+      //     'assets/icons/truckPin.png')
+      //     .then((value) => {
+      //   setState(() {
+      //     pinLocationIconTruck = value;
+      //   }),
+      //   print("hello ${widget.gpsDataList.length}"),
+      //   for (int i = 0; i < widget.gpsDataList.length; i++)
+      //     {
+      //       if (widget.gpsDataList[i] != null){
+      //         if(widget.status[i] == 'Offline'){
+      //           createmarker(
+      //               widget.gpsDataList[i], widget.truckDataList[i])
+      //         }
+      //       }
+      //     }
+      // });
+
+    }
   }
 
   void createmarker(GpsDataModel gpsData, var truck) async {
     try {
       final GoogleMapController controller = await _controller.future;
 
-      LatLng latLngMarker =
-      LatLng(gpsData.latitude!, gpsData.longitude!);
+      LatLng latLngMarker = LatLng(gpsData.latitude!, gpsData.longitude!);
       print("Live location is  ${gpsData.latitude}");
       print("hh");
       print(gpsData.deviceId.toString());
@@ -156,8 +236,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
       var trucklatlong = latLngMarker;
       setState(() {
         direction = 180 + gpsData.course!;
-        lastlatLngMarker =
-            LatLng(gpsData.latitude!, gpsData.longitude!);
+        lastlatLngMarker = LatLng(gpsData.latitude!, gpsData.longitude!);
         latlng.add(lastlatLngMarker);
         customMarkers.add(Marker(
             markerId: MarkerId(gpsData.deviceId.toString()),
@@ -169,14 +248,13 @@ class _AllMapWidgetState extends State<AllMapWidget>
               );
             },
             infoWindow: InfoWindow(
-              //   title: title,
+                //   title: title,
                 onTap: () {}),
             icon: pinLocationIconTruck,
             rotation: direction));
         print("here i am");
         customMarkers.add(Marker(
-            markerId:
-            MarkerId("Details of ${gpsData.deviceId.toString()}"),
+            markerId: MarkerId("Details of ${gpsData.deviceId.toString()}"),
             position: latLngMarker,
             icon: BitmapDescriptor.fromBytes(markerIcons),
             rotation: 0.0));
@@ -195,12 +273,12 @@ class _AllMapWidgetState extends State<AllMapWidget>
     }
   }
 
-  @override
-  void dispose() {
-    logger.i("Activity is disposed");
-    timer.cancel();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   logger.i("Activity is disposed");
+  //   timer.cancel();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +286,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
     double threshold = 100;
 
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.of(context).size.width * 10,
       child: Scaffold(
         body: Stack(children: <Widget>[
           GoogleMap(
@@ -234,7 +312,7 @@ class _AllMapWidgetState extends State<AllMapWidget>
             },
             gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
               new Factory<OneSequenceGestureRecognizer>(
-                    () => new EagerGestureRecognizer(),
+                () => new EagerGestureRecognizer(),
               ),
             ].toSet(),
           ),
@@ -269,6 +347,65 @@ class _AllMapWidgetState extends State<AllMapWidget>
                                   ),
                                 ),*/
           Positioned(
+              top: 10,
+              left: 10,
+              child: Container(
+                color: Colors.white,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                                color: Colors.white,
+                                width: 30,
+                                height: 30,
+                                child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: Image.asset(
+                                        'assets/images/truck.png'))),
+                            Text('Show All')
+                          ],
+                        ),
+                      ),
+                    ),
+                    const VerticalDivider(
+                      color: Colors.black,
+                      thickness: 2,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          SystemChrome.setEnabledSystemUIMode(
+                              SystemUiMode.immersiveSticky);
+                        });
+                      },
+                      child: SizedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Container(
+                                  color: Colors.white,
+                                  width: 30,
+                                  height: 30,
+                                  child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Icon(Icons.fullscreen_exit))),
+                              Text('Full Screen')
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+          Positioned(
             right: 10,
             bottom: height / 3 + 140,
             child: SizedBox(
@@ -286,12 +423,12 @@ class _AllMapWidgetState extends State<AllMapWidget>
                   this
                       ._googleMapController
                       .animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      bearing: 0,
-                      target: lastlatLngMarker,
-                      zoom: this.zoom,
-                    ),
-                  ));
+                        CameraPosition(
+                          bearing: 0,
+                          target: lastlatLngMarker,
+                          zoom: this.zoom,
+                        ),
+                      ));
                 },
               ),
             ),
@@ -314,12 +451,12 @@ class _AllMapWidgetState extends State<AllMapWidget>
                   this
                       ._googleMapController
                       .animateCamera(CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      bearing: 0,
-                      target: lastlatLngMarker,
-                      zoom: this.zoom,
-                    ),
-                  ));
+                        CameraPosition(
+                          bearing: 0,
+                          target: lastlatLngMarker,
+                          zoom: this.zoom,
+                        ),
+                      ));
                 },
               ),
             ),
@@ -330,8 +467,8 @@ class _AllMapWidgetState extends State<AllMapWidget>
   }
 
   getAddress(var gpsData) async {
-    var address = await getStoppageAddressLatLong(
-        gpsData.latitude, gpsData.longitude);
+    var address =
+        await getStoppageAddressLatLong(gpsData.latitude, gpsData.longitude);
 
     return address;
   }

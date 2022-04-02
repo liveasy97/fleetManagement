@@ -1,3 +1,4 @@
+import 'package:fleet_management/screens/tacking_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,6 +14,7 @@ import '../constants/spaces.dart';
 import '../functions/trackScreenFunctions.dart';
 import '../models/deviceModel.dart';
 import '../providerClass/providerData.dart';
+import '../screens/trackScreen.dart';
 
 // ignore: must_be_immutable
 class MyTruckCard extends StatefulWidget {
@@ -120,6 +122,24 @@ class _MyTruckCardState extends State<MyTruckCard> {
               gpsStoppageHistory != null) {
             EasyLoading.dismiss();
             print('here no');
+            Get.to(
+              TrackingPage(
+                deviceId: widget.gpsData.deviceId,
+                gpsData: widget.gpsData,
+                // position: position,
+                TruckNo: widget.truckno,
+                //   driverName: widget.truckData.driverName,
+                //  driverNum: widget.truckData.driverNum,
+                gpsDataHistory: gpsDataHistory,
+                gpsStoppageHistory: gpsStoppageHistory,
+                routeHistory: gpsRoute,
+                //    truckId: widget.truckData.truckId,
+                totalDistance: totalDistance,
+                imei: widget.imei,
+                status: widget.status,
+                  lastupdated:lastupdated
+              ),
+            );
             print(widget.gpsData.address);
           } else {
             EasyLoading.dismiss();
@@ -141,8 +161,7 @@ class _MyTruckCardState extends State<MyTruckCard> {
                   ),
                   child: Column(
                     children: [
-                      online
-                          ? Container(
+                      online ? Container(
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

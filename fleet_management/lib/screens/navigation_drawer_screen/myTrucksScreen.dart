@@ -1,8 +1,10 @@
 import 'package:async/async.dart';
 import 'package:fleet_management/maptest.dart';
 import 'package:fleet_management/screens/MapTrucks.dart';
+import 'package:fleet_management/widgets/buttons/addTruckButton.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,7 @@ import '../../widgets/loadingWidgets/bottomProgressBarIndicatorWidget.dart';
 import '../../widgets/loadingWidgets/truckLoadingWidgets.dart';
 import '../../widgets/myTrucksCard.dart';
 import '../../widgets/truckScreenBarButton.dart';
+import '../add truck/truckNumberRegistration.dart';
 import '../mapAllTrucks.dart';
 import '../myTrucksSearchResultsScreen.dart';
 
@@ -76,6 +79,7 @@ class _MyTrucksState extends State<MyTrucks> {
   var StoppedGps = [];
 
   var items = [];
+  var dummySearchList = [];
 
   TextEditingController editingController = TextEditingController();
 
@@ -102,6 +106,15 @@ class _MyTrucksState extends State<MyTrucks> {
         getMyDevices(i);
       }
     });
+
+    //search
+    dummySearchList = items;
+    // items = items;
+    // gpsDataList = gpsDataList;
+    // status = widget.status;
+    // deviceList = widget.deviceList;
+    print("CHECK Init${status}");
+
   }
 
   @override
@@ -117,313 +130,337 @@ class _MyTrucksState extends State<MyTrucks> {
     PageController(initialPage: providerData.upperNavigatorIndex);
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: SingleChildScrollView(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(space_4, space_4, space_4, space_2),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width/4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: space_3),
-                      child: Container(
-                        height: space_8,
-                        decoration: BoxDecoration(
-                          color: widgetBackGroundColor,
-                          borderRadius: BorderRadius.zero,
-                          border: Border.all(
-                            width: 0.8,
-                            // color: borderBlueColor,
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(space_4, space_4, space_4, space_2),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width/4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: space_3),
+                  child: Container(
+                    height: space_8,
+                    decoration: BoxDecoration(
+                      color: widgetBackGroundColor,
+                      borderRadius: BorderRadius.zero,
+                      border: Border.all(
+                        width: 0.8,
+                        // color: borderBlueColor,
+                      ),
+                    ),
+                    child: TextField(
+                      // onTap: () {
+                      //   Get.to(MyTrucksResult(
+                      //       gpsDataList: gpsDataList,
+                      //       deviceList: devicelist,
+                      //       //truckAddressList: truckAddressList,
+                      //       status: status,
+                      //       items: items,
+                      //     ),
+                      //   );
+                      //   print("Enterrr");
+                      //   print("THE ITEMS $items");
+                      // },
+                      // readOnly: true,
+                      textCapitalization: TextCapitalization.characters,
+                      onChanged: (value) {
+                        filterSearchResults(value);
+                        print("EnteRRR");
+                        print(gpsDataList);
+                        print(status);
+                        //print("THE ITEMS $items");
+                      },
+                      autofocus: true,
+                      keyboardType: TextInputType.number,
+                      controller: editingController,
+                      textAlignVertical: TextAlignVertical.center,
+                      textAlign: TextAlign.start,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'search'.tr,
+                        icon: Padding(
+                          padding: EdgeInsets.only(left: space_2),
+                          child: Icon(
+                            Icons.search,
+                            color: grey,
                           ),
                         ),
-                        child: TextField(
-                          onTap: () {
-                            Get.to(() => MyTrucksResult(
-                              gpsDataList: gpsDataList,
-                              deviceList: devicelist,
-                              //truckAddressList: truckAddressList,
-                              status: status,
-                              items: items,
-                            ));
-                            print("Enterrr");
-                            print("THE ITEMS $items");
-                          },
-                          readOnly: true,
-                          textAlignVertical: TextAlignVertical.center,
-                          textAlign: TextAlign.start,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'search'.tr,
-                            icon: Padding(
-                              padding: EdgeInsets.only(left: space_2),
-                              child: Icon(
-                                Icons.search,
-                                color: grey,
-                              ),
-                            ),
-                            hintStyle: TextStyle(
-                              fontSize: size_8,
-                              color: grey,
-                            ),
-                          ),
+                        hintStyle: TextStyle(
+                          fontSize: size_8,
+                          color: grey,
                         ),
                       ),
                     ),
-
-                    //LIST OF TRUCK CARDS---------------------------------------------
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF7F8FA),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFEFEFEF),
-                            blurRadius: 9,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          TruckScreenBarButton(
-                              text: 'all'.tr,
-                              // 'All',
-                              value: 0,
-                              pageController: pageController),
-                          Container(
-                            padding: EdgeInsets.all(0),
-                            width: 1,
-                            height: 15,
-                            color: const Color(0xFFC2C2C2),
-                          ),
-                          TruckScreenBarButton(
-                              text: 'running'.tr,
-                              // 'Running'
-                              value: 1,
-                              pageController: pageController),
-                          Container(
-                            padding: EdgeInsets.all(0),
-                            width: 1,
-                            height: 15,
-                            color: const Color(0xFFC2C2C2),
-                          ),
-                          TruckScreenBarButton(
-                              text: 'stopped'.tr,
-                              // 'Stopped',
-                              value: 2,
-                              pageController: pageController),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 6,
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    Expanded(
-                      child: Stack(children: [
-                        Container(
-                          //    margin: EdgeInsets.fromLTRB(space_2, 0, space_2, 0),
-                          height: MediaQuery.of(context).size.height -
-                              kBottomNavigationBarHeight -
-                              230 -
-                              space_4,
-                          child: PageView(
-                              controller: pageController,
-                              onPageChanged: (value) {
-                                setState(() {
-                                  providerData.updateUpperNavigatorIndex(value);
-                                });
-                              },
-                              children: [
-                                Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    loading
-                                        ? TruckLoadingWidgets()
-                                        : trucklist.isEmpty
-                                        ? Container(
-                                      // height: MediaQuery.of(context).size.height * 0.27,
-                                      margin: EdgeInsets.only(top: 153),
-                                      child: Column(
-                                        children: [
-                                          Image(
-                                            image: AssetImage(
-                                                'assets/images/TruckListEmptyImage.png'),
-                                            height: 127,
-                                            width: 127,
-                                          ),
-                                          Text(
-                                            'notruckadded'.tr,
-                                            // 'Looks like you have not added any Trucks!',
-                                            style: TextStyle(
-                                                fontSize: size_8,
-                                                color: grey),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    ): ListView.builder(
-                                          physics: AlwaysScrollableScrollPhysics(),
-                                          controller: scrollController,
-                                          scrollDirection: Axis.vertical,
-                                          padding: EdgeInsets.only(
-                                              bottom: space_15),
-                                          itemCount: trucklist.length,
-                                          itemBuilder: (context, index) =>
-                                          index == trucklist.length
-                                              ? bottomProgressBarIndicatorWidget()
-                                              : MyTruckCard(
-                                            truckno:
-                                            trucklist[index],
-                                            status: status[index],
-                                            gpsData:
-                                            gpsDataList[index],
-                                            device:
-                                            devicelist[index],
-                                          )),
-
-                                  ],
-                                ),
-                                Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    loading
-                                        ? TruckLoadingWidgets()
-                                        : runningList.isEmpty
-                                        ? Container(
-                                      // height: MediaQuery.of(context).size.height * 0.27,
-                                      margin: EdgeInsets.only(top: 153),
-                                      child: Column(
-                                        children: [
-                                          Image(
-                                            image: AssetImage(
-                                                'assets/images/TruckListEmptyImage.png'),
-                                            height: 127,
-                                            width: 127,
-                                          ),
-                                          SizedBox(height: 20),
-                                          Text(
-                                            'notruckrunnning'.tr,
-                                            // 'Looks like none of your trucks are running!',
-                                            style: TextStyle(
-                                                fontSize: size_8,
-                                                color: grey),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                        :  ListView.builder(
-                                        padding:
-                                        EdgeInsets.only(bottom: space_15),
-                                        physics: AlwaysScrollableScrollPhysics(),
-                                        controller: scrollController,
-                                        scrollDirection: Axis.vertical,
-                                        itemCount: runningList.length,
-                                        itemBuilder: (context, index) => index ==
-                                            runningList.length
-                                            ? bottomProgressBarIndicatorWidget()
-                                            : MyTruckCard(
-                                          truckno: runningList[index],
-                                          status: runningStatus[index],
-                                          gpsData:
-                                          runningGpsData[index],
-                                          device:
-                                          runningdevicelist[index],
-                                        ),
-                                      ),
-
-                                  ],
-                                ),
-                                Stack(
-                                  alignment: Alignment.bottomCenter,
-                                  children: [
-                                    loading
-                                        ? TruckLoadingWidgets()
-                                        : StoppedList.isEmpty
-                                        ? Container(
-                                      // height: MediaQuery.of(context).size.height * 0.27,
-                                      margin: EdgeInsets.only(top: 153),
-                                      child: Column(
-                                        children: [
-                                          Image(
-                                            image: AssetImage(
-                                                'assets/images/TruckListEmptyImage.png'),
-                                            height: 127,
-                                            width: 127,
-                                          ),
-                                          SizedBox(height: 20),
-                                          Text(
-                                            'notruckstopped'.tr,
-                                            // 'Looks like none of your trucks are stopped!',
-                                            style: TextStyle(
-                                                fontSize: size_8,
-                                                color: grey),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                        : ListView.builder(
-                                        padding:
-                                        EdgeInsets.only(bottom: space_15),
-                                        physics: AlwaysScrollableScrollPhysics(),
-                                        controller: scrollController,
-                                        scrollDirection: Axis.vertical,
-                                        itemCount: StoppedList.length,
-                                        itemBuilder: (context, index) => index ==
-                                            StoppedList.length
-                                            ? bottomProgressBarIndicatorWidget()
-                                            : MyTruckCard(
-                                          truckno: StoppedList[index],
-                                          status: StoppedStatus[index],
-                                          gpsData:
-                                          StoppedGpsData[index],
-                                          device:
-                                          stoppeddevicelist[index],
-
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ]),
-                        ),
-                      ]),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(space_4, space_4, space_4, space_2),
-                  height: MediaQuery.of(context).size.height -
-                      kBottomNavigationBarHeight -
-                      space_4,
-                  width: MediaQuery.of(context).size.width,
-                  child:
-                  // MapTrucks()
-                  MapAllTrucks(
-                    gpsDataList: gpsDataList,
-                    runningDataList: runningList,
-                    runningGpsDataList: runningGpsData,
-                    stoppedList: StoppedList,
-                    stoppedGpsList: StoppedGpsData,
-                    deviceList: trucklist,
                   ),
                 ),
-              )
-            ],
-          )
+
+                //LIST OF TRUCK CARDS---------------------------------------------
+                SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F8FA),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFEFEFEF),
+                          blurRadius: 9,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        TruckScreenBarButton(
+                            text: 'all'.tr,
+                            // 'All',
+                            value: 0,
+                            pageController: pageController),
+                        Container(
+                          padding: EdgeInsets.all(0),
+                          width: 1,
+                          height: 15,
+                          color: const Color(0xFFC2C2C2),
+                        ),
+                        TruckScreenBarButton(
+                            text: 'running'.tr,
+                            // 'Running'
+                            value: 1,
+                            pageController: pageController),
+                        Container(
+                          padding: EdgeInsets.all(0),
+                          width: 1,
+                          height: 15,
+                          color: const Color(0xFFC2C2C2),
+                        ),
+                        TruckScreenBarButton(
+                            text: 'stopped'.tr,
+                            // 'Stopped',
+                            value: 2,
+                            pageController: pageController),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 6,
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Expanded(
+                  child: Stack(children: [
+                    Container(
+                      //    margin: EdgeInsets.fromLTRB(space_2, 0, space_2, 0),
+                      height: MediaQuery.of(context).size.height -
+                          kBottomNavigationBarHeight -
+                          230 -
+                          space_4,
+                      child: PageView(
+                          controller: pageController,
+                          onPageChanged: (value) {
+                            setState(() {
+                              providerData.updateUpperNavigatorIndex(value);
+                            });
+                          },
+                          children: [
+                            Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                loading
+                                    ? TruckLoadingWidgets()
+                                    : trucklist.isEmpty
+                                    ? Container(
+                                  // height: MediaQuery.of(context).size.height * 0.27,
+                                  margin: EdgeInsets.only(top: 153),
+                                  child: Column(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                            'assets/images/TruckListEmptyImage.png'),
+                                        height: 127,
+                                        width: 127,
+                                      ),
+                                      Text(
+                                        'notruckadded'.tr,
+                                        // 'Looks like you have not added any Trucks!',
+                                        style: TextStyle(
+                                            fontSize: size_8,
+                                            color: grey),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ): ListView.builder(
+                                      physics: AlwaysScrollableScrollPhysics(),
+                                      controller: scrollController,
+                                      scrollDirection: Axis.vertical,
+                                      padding: EdgeInsets.only(
+                                          bottom: space_15),
+                                      itemCount: trucklist.length,
+                                      itemBuilder: (context, index) =>
+                                      index == trucklist.length
+                                          ? bottomProgressBarIndicatorWidget()
+                                          : MyTruckCard(
+                                        truckno:
+                                        trucklist[index],
+                                        status: status[index],
+                                        gpsData:
+                                        gpsDataList[index],
+                                        device:
+                                        devicelist[index],
+                                      )),
+
+                              ],
+                            ),
+                            Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                loading
+                                    ? TruckLoadingWidgets()
+                                    : runningList.isEmpty
+                                    ? Container(
+                                  // height: MediaQuery.of(context).size.height * 0.27,
+                                  margin: EdgeInsets.only(top: 153),
+                                  child: Column(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                            'assets/images/TruckListEmptyImage.png'),
+                                        height: 127,
+                                        width: 127,
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        'notruckrunnning'.tr,
+                                        // 'Looks like none of your trucks are running!',
+                                        style: TextStyle(
+                                            fontSize: size_8,
+                                            color: grey),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    :  ListView.builder(
+                                    padding:
+                                    EdgeInsets.only(bottom: space_15),
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    controller: scrollController,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: runningList.length,
+                                    itemBuilder: (context, index) => index ==
+                                        runningList.length
+                                        ? bottomProgressBarIndicatorWidget()
+                                        : MyTruckCard(
+                                      truckno: runningList[index],
+                                      status: runningStatus[index],
+                                      gpsData:
+                                      runningGpsData[index],
+                                      device:
+                                      runningdevicelist[index],
+                                    ),
+                                  ),
+
+                              ],
+                            ),
+                            Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                loading
+                                    ? TruckLoadingWidgets()
+                                    : StoppedList.isEmpty
+                                    ? Container(
+                                  // height: MediaQuery.of(context).size.height * 0.27,
+                                  margin: EdgeInsets.only(top: 153),
+                                  child: Column(
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                            'assets/images/TruckListEmptyImage.png'),
+                                        height: 127,
+                                        width: 127,
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        'notruckstopped'.tr,
+                                        // 'Looks like none of your trucks are stopped!',
+                                        style: TextStyle(
+                                            fontSize: size_8,
+                                            color: grey),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                                    : ListView.builder(
+                                    padding:
+                                    EdgeInsets.only(bottom: space_15),
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    controller: scrollController,
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: StoppedList.length,
+                                    itemBuilder: (context, index) => index ==
+                                        StoppedList.length
+                                        ? bottomProgressBarIndicatorWidget()
+                                        : MyTruckCard(
+                                      truckno: StoppedList[index],
+                                      status: StoppedStatus[index],
+                                      gpsData:
+                                      StoppedGpsData[index],
+                                      device:
+                                      stoppeddevicelist[index],
+
+                                    ),
+                                  ),
+
+                              ],
+                            ),
+                          ]),
+                    ),
+                    Positioned(
+                      bottom: 25.0,
+                      right: 0.0,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          Get.to(AddNewTruck());
+                        },
+                        backgroundColor: darkBlueColor,
+                        child: Icon(Icons.add),
+                      ),
+                    )
+                  ]),
+                ),
+              ],
+            ),
+          ),
+          // Expanded(
+          //   child: Container(
+          //     padding: EdgeInsets.fromLTRB(space_4, space_4, space_4, space_2),
+          //     height: MediaQuery.of(context).size.height -
+          //         kBottomNavigationBarHeight -
+          //         space_4,
+          //     width: MediaQuery.of(context).size.width,
+          //     child:
+          //     // MapTrucks()
+          //     MapAllTrucks(
+          //       gpsDataList: gpsDataList,
+          //       runningDataList: runningList,
+          //       runningGpsDataList: runningGpsData,
+          //       stoppedList: StoppedList,
+          //       stoppedGpsList: StoppedGpsData,
+          //       deviceList: trucklist,
+          //     ),
+          //   ),
+          // )
+        ],
       ),
     );
   } //build
@@ -638,6 +675,54 @@ class _MyTrucksState extends State<MyTrucks> {
       stat.insert(i, "Running");
     }*/
   }
+
+  void filterSearchResults(String query) {
+    print("LIST IS $devicelist");
+    print("$query");
+
+    if (query.isNotEmpty) {
+      //print("DUMMYSEARCH${dummySearchList}");
+      var dummyListData = [];
+      var dummyGpsData = [];
+      var dummyStatusData = [];
+      for (var i = 0; i < dummySearchList.length; i++) {
+        print("FOREACH ${dummySearchList[i].truckno}");
+        if ((dummySearchList[i].truckno.replaceAll(' ', '')).contains(query) ||
+            (dummySearchList[i].truckno).contains(query)) {
+          print("INSIDE IF");
+          print("THE SEARCHHH IS ${dummySearchList[i].truckno}");
+          dummyListData.add(dummySearchList[i]);
+          dummyGpsData.add(gpsDataList[i]);
+          dummyStatusData.add(status[i]);
+          //print("DATATYPE${dummyListData.runtimeType}");
+        }
+      }
+      setState(() {
+        items = [];
+        gpsDataList = [];
+
+        status = [];
+        items.addAll(dummyListData);
+        gpsDataList.addAll(dummyGpsData);
+        status.addAll(dummyStatusData);
+        //print("THE DUMY $dummyListData");
+      });
+      return;
+    } else {
+      print("QUERY EMPTY?");
+      setState(() {
+        items = [];
+        gpsDataList = [];
+        status = [];
+        items.addAll(devicelist);
+        gpsDataList.addAll(gpsDataList);
+        status.addAll(status);
+        //print("THE ITEMSS ${items}");
+      });
+    }
+  }
+
+
 }
 
 //class

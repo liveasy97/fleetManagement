@@ -30,7 +30,7 @@ class FirebaseAuthentication{
     printMessage(otp);
     await confirmationResult.confirm(otp);
     await runTransporterApiPost(mobileNum: phoneNumber);
-    Get.off(NavigationScreen());
+    Get.off(()=>NavigationScreen());
 
 
   }
