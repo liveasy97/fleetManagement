@@ -1,6 +1,7 @@
 import 'package:async/async.dart';
 import 'package:fleet_management/screens/navigation_drawer_screen/myTrucksScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 
@@ -130,15 +131,80 @@ class _FirstPageState extends State<FirstPage> {
             width: MediaQuery.of(context).size.width/1.5,
             child:
                 // MapTrucks()
-                MapAllTrucks(
+                Stack(
+                  children: [
+                    MapAllTrucks(
               gpsDataList: gpsDataList,
               runningDataList: runningList,
               runningGpsDataList: runningGpsData,
               stoppedList: StoppedList,
               stoppedGpsList: StoppedGpsData,
               deviceList: trucklist,
-                  status: status,
+                      status: status,
             ),
+                    Positioned(
+                        top: 10,
+                        left: 10,
+                        child: Container(
+                          color: Colors.white,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                          color: Colors.white,
+                                          width: 30,
+                                          height: 30,
+                                          child: FittedBox(
+                                              fit: BoxFit.contain,
+                                              child: Image.asset(
+                                                  'assets/images/truck.png'))),
+                                      Text('Show All')
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const VerticalDivider(
+                                color: Colors.black,
+                                thickness: 2,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  setState(() {
+                                    SystemChrome.setEnabledSystemUIMode(
+                                        SystemUiMode.manual,overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+                                    print("fillscreen tapped");
+                                  });
+                                },
+                                child: SizedBox(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                            color: Colors.white,
+                                            width: 30,
+                                            height: 30,
+                                            child: FittedBox(
+                                                fit: BoxFit.contain,
+                                                child: Icon(Icons.fullscreen_exit))),
+                                        Text('Full Screen')
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+
+                  ],
+                ),
           )
         ],
       ),
