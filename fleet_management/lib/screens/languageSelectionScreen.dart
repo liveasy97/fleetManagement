@@ -40,7 +40,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
     currentItem = LocalizationService().getCurrentLang();  //added this
   }
   Function? onTapNext(){
-    Get.to(bottomProgressBarIndicatorWidget());
+    Get.off(()=>bottomProgressBarIndicatorWidget());
     Get.off(() => NavigationScreen());
   }
   getData() async {
@@ -245,7 +245,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
                       ),
                       _nextScreen?
                       GetStartedButton(onTapNext: this.onTapNext,) : GetStartedButton(onTapNext: (){
-                        Get.off(LoginScreen());
+                        Get.off(()=>LoginScreen());
                       },)
 
                     ],

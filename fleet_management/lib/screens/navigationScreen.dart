@@ -1,5 +1,6 @@
 import 'package:fleet_management/controller/transporterIdController.dart';
 import 'package:fleet_management/firebase_auth.dart';
+import 'package:fleet_management/screens/navigation_drawer_screen/first_page.dart';
 import 'package:fleet_management/screens/navigation_drawer_screen/myTrucksScreen.dart';
 import 'package:fleet_management/screens/navigation_drawer_screen/user_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class _NavigationScreenState extends State<NavigationScreen> with SingleTickerPr
   int active = 0;
 
   var screens = [
-    MyTrucks(),
+    FirstPage(),
     UserScreens(),
   ];
 

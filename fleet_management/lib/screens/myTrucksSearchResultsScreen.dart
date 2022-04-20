@@ -57,6 +57,7 @@ class _MyTrucksResultState extends State<MyTrucksResult> {
             height: MediaQuery.of(context).size.height -
                 kBottomNavigationBarHeight -
                 space_4,
+            width: MediaQuery.of(context).size.width/4,
             child: Column(
               children: [
                 Row(

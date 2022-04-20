@@ -23,6 +23,7 @@ class MapAllTrucks extends StatefulWidget {
   List runningGpsDataList;
   List stoppedList;
   List stoppedGpsList;
+  List status;
 
   MapAllTrucks({
     required this.gpsDataList,
@@ -31,6 +32,7 @@ class MapAllTrucks extends StatefulWidget {
     required this.runningGpsDataList,
     required this.stoppedGpsList,
     required this.stoppedList,
+    required this.status,
   });
 
   @override
@@ -118,20 +120,17 @@ class _MapAllTrucksState extends State<MapAllTrucks>
     return Scaffold(
         body: SingleChildScrollView(
             child: Container(
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
-                child: Container(
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height - 125,
-                  child: AllMapWidget(
-                      gpsDataList: widget.gpsDataList,
-                      truckDataList: widget.deviceList),
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
+              width: MediaQuery.of(context).size.width,
+              child: AllMapWidget(
+                  gpsDataList: widget.gpsDataList,
+                  truckDataList: widget.deviceList,
+                  status: widget.status,
+              ),
 
-                )
             )
         ));
   }

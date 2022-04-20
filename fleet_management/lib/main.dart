@@ -27,6 +27,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 var firebase;
 
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await GetStorage.init();

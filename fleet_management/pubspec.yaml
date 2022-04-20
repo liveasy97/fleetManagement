@@ -77,6 +77,13 @@ dependencies:
   easy_localization: ^3.0.0
   map:
   cached_network_image:
+  device_info: ^2.0.2
+  flutter_background: ^1.0.2+1
+  flutter_animarker: ^3.2.0
+  date_format: ^2.0.2
+  syncfusion_flutter_charts: ^19.4.50
+  fullscreen: ^1.0.3
+
 
 
   # The following adds the Cupertino Icons font to your application.
