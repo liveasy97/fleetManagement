@@ -15,8 +15,8 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="$FLUTTER_BASE_HREF">
-
+<!--   <base href="$FLUTTER_BASE_HREF"> -->
+  <base href="/">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
@@ -25,6 +25,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="fleet_management">
+  <meta name="google-signin-client_id" content="391097736494-nvdqoflqmba77io669jurrele65tqh60.apps.googleusercontent.com">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -34,34 +35,29 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <meta name="google-signin-client_id" content="391097736494-nvdqoflqmba77io669jurrele65tqh60.apps.googleusercontent.com">
-
-  <script async src="//maps.googleapis.com/maps/api/js?v=3.48&key=AIzaSyCPU872xIfRhjvtdLViTDbj0EnIBuxlcSs&callback=initMap"></script>
-  <script src="main.dart.js" type="application/javascript"></script>
+ 
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/8.8.0/firebase-app.js"></script>
   
+<!--   
+  <script async src="//maps.googleapis.com/maps/api/js?v=3.48&key=AIzaSyCPU872xIfRhjvtdLViTDbj0EnIBuxlcSs&callback=initMap"></script>
+  <script src="main.dart.js" type="application/javascript"></script> -->
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
 <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
 
-  
-  <!--  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCPU872xIfRhjvtdLViTDbj0EnIBuxlcSs"></script>-->
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-messaging.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-analytics.js"></script>
-
-<!-- Initialize Firebase -->
-  <script src="/__/firebase/init.js"></script>
-
-
 <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-<!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script> -->
-<script src="https://apis.google.com/js/platform.js" async defer></script>    
-
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
   <script>
     // Import the functions you need from the SDKs you need
     // TODO: Add SDKs for Firebase products that you want to use
@@ -69,19 +65,18 @@
 
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-      apiKey: "AIzaSyAkr6TbmcTYmBow94I7m-GZ9M1dOpjT6qU",
-      authDomain: "fleetmanagement-ae95e.firebaseapp.com",
-      projectId: "fleetmanagement-ae95e",
-      storageBucket: "fleetmanagement-ae95e.appspot.com",
-      messagingSenderId: "391097736494",
-      appId: "1:391097736494:web:6854a8a377137ca1faaebf",
-      measurementId: "G-63DV4EZ6JF"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAkr6TbmcTYmBow94I7m-GZ9M1dOpjT6qU",
+    authDomain: "fleetmanagement-ae95e.firebaseapp.com",
+    projectId: "fleetmanagement-ae95e",
+    storageBucket: "fleetmanagement-ae95e.appspot.com",
+    messagingSenderId: "391097736494",
+    appId: "1:391097736494:web:6854a8a377137ca1faaebf"
+  };
+
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
   </script>
 
 
@@ -119,7 +114,7 @@
             if (!reg.active && (reg.installing || reg.waiting)) {
               // No active web worker and we have installed or are installing
               // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing || reg.waiting);
+              waitForActivation(reg.installing ?? reg.waiting);
             } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
               // When the app updates the serviceWorkerVersion changes, so we
               // need to ask the service worker to update.
@@ -148,8 +143,7 @@
       // Service workers not supported. Just drop the <script> tag.
       loadMainDartJs();
     }
-
   </script>
- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
 </body>
 </html>
